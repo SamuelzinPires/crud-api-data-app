@@ -1,0 +1,9 @@
+services:
+  db:
+    image: postgres:15
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: Admin
+      POSTGRES_PASSWORD: Admin123
+      POSTGRES_DB: FastAPI_DB
