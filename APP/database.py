@@ -1,11 +1,15 @@
+import os   
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-Url_banco = "postgresql://Admin:Admin123@localhost:5432/FastAPI_DB"
+load_dotenv()
+
+Url_banco = f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}" #url de conexão com o banco de dados  
 
 engine = create_engine(Url_banco) #pool de conexões com o banco de dados
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)  #Janelas de atendimento
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine) #Janelas de atendimento
 Base = declarative_base() 
 
 def get_db():

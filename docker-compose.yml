@@ -2,8 +2,8 @@ services:
   db:
     image: postgres:15
     ports:
-      - "5432:5432"
+      - ${DB_PORT}:5432
     environment:
-      POSTGRES_USER: Admin
-      POSTGRES_PASSWORD: Admin123
-      POSTGRES_DB: FastAPI_DB
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
