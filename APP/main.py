@@ -27,3 +27,23 @@ def create_vaga(vaga: schemas.VagaBase, db: Session = Depends(get_db)):  # Funç
     db.commit()   # Confirma a transação, salvando a nova vaga no banco de dados.
     db.refresh(db_vaga)   # Atualiza a instância db_vaga com os dados mais recentes do banco de dados, incluindo o ID gerado automaticamente.
     return db_vaga   # Retorna a nova vaga como resposta da API.
+
+@app.put("/vagas/{vaga_id}", response_model=schemas.Vaga)   # Define uma rota PUT para atualizar uma vaga existente. A resposta será um objeto do modelo schemas.Vaga.
+def update_vaga(vaga_id: int, vaga: schemas.VagaBase, db: Session = Depends(get_db)):  # Função que atualiza uma vaga existente no banco de dados. Recebe o ID da vaga, os novos dados como um objeto schemas.VagaBase e a sessão do SQLAlchemy como dependência.
+    db_vaga = db.query(models.Vaga).filter(models.Vaga.id == vaga_id).first()   # Consulta a vaga existente no banco de dados pelo ID.
+    if not db_vaga:   # Se a vaga não for encontrada, levanta uma exceção HTTP com status 404 e uma mensagem de erro.
+        raise HTTPException(status_code=404, detail="Vaga não encontrada")
+    for key, value in vaga.model_dump().items():   # Atualiza os atributos da vaga existente com os novos valores fornecidos.
+        setattr(db_vaga, key, value)
+    db.commit()   # Confirma a transação, salvando as alterações no banco de dados.
+    db.refresh(db_vaga)   # Atualiza a instância db_vaga com os dados mais recentes do banco de dados.
+    return db_vaga   # Retorna a vaga atualizada como resposta da API.
+    
+@app.delete("/vagas/{vaga_id}", response_model=schemas.Vaga)   # Define uma rota DELETE para remover uma vaga existente. A resposta será um objeto do modelo schemas.Vaga.
+def delete_vaga(vaga_id: int, db: Session = Depends(get_db)): # Função que remove uma vaga existente do banco de dados. Recebe o ID da vaga e a sessão do SQLAlchemy como dependência.
+    db_vaga = db.query(models.Vaga).filter(models.Vaga.id == vaga_id).first()   # Consulta a vaga existente no banco de dados pelo ID.
+    if not db_vaga:   # Se a vaga não for encontrada, levanta uma exceção HTTP com status 404 e uma mensagem de erro.
+        raise HTTPException(status_code=404, detail="Vaga não encontrada")
+    db.delete(db_vaga)   # Remove a vaga da sessão do SQLAlchemy.
+    db.commit()   # Confirma a transação, removendo a vaga do banco de dados.
+    return db_vaga   # Retorna a vaga removida como resposta da API.
