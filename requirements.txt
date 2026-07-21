@@ -1,2 +1,4 @@
 Fastapi[standard]
 python-dotenv
+streamlit
+requests

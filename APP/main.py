@@ -20,7 +20,7 @@ def read_vaga(vaga_id: int, db: Session = Depends(get_db)):  # funçao que lê a
 
 Base.metadata.create_all(bind=engine)   #Cria as tabelas no banco de dados de acordo com os modelos definidos no SQLAlchemy. Isso garante que todas as tabelas necessárias sejam criadas antes de qualquer operação de banco de dados ser realizada. 
 
-@app.post("/vagas", response_model=schemas.Vaga)    # Define uma rota POST para criar uma nova vaga. A resposta será um objeto do modelo schemas.Vaga.
+@app.post("/vagas", response_model=schemas.Vaga, status_code=201)    # Define uma rota POST para criar uma nova vaga. A resposta será um objeto do modelo schemas.Vaga.
 def create_vaga(vaga: schemas.VagaBase, db: Session = Depends(get_db)):  # Função que cria uma nova vaga no banco de dados. Recebe os dados da vaga como um objeto schemas.VagaBase e a sessão do SQLAlchemy como dependência.
     db_vaga = models.Vaga(**vaga.model_dump())   # Cria uma instância do modelo Vaga usando os dados fornecidos. O método dict() converte o objeto Pydantic em um dicionário.
     db.add(db_vaga)   # Adiciona a nova vaga à sessão do SQLAlchemy.
