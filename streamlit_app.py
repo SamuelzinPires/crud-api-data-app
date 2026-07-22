@@ -26,3 +26,13 @@ if vagas_filtradas:  # lista vazia é "falsa" em Python - checa se sobrou algo p
         st.write("---")
 else:
     st.write("Nenhuma vaga encontrada para o nível selecionado.")
+
+with st.form("nova_vaga"):
+    titulo_vaga = st. text_input ("titulo")
+    empresa_vaga = st. text_input ("empresa")
+    formato_vaga = st. text_input ("formato")
+    link_vaga = st. text_input ("link")
+    nivel_vaga = st. text_input ("nivel")
+    nova_vaga = st.form_submit_button("inserir vaga") 
+if nova_vaga:  
+    dados_vaga = {"titulo":titulo_vaga, "empresa":empresa_vaga,"formato":formato_vaga,"link":link_vaga,"nivel":nivel_vaga}
