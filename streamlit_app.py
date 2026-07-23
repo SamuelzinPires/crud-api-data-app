@@ -27,6 +27,7 @@ if vagas_filtradas:  # lista vazia é "falsa" em Python - checa se sobrou algo p
 else:
     st.write("Nenhuma vaga encontrada para o nível selecionado.")
 
+#Adicionar vagas Manualmente
 with st.form("nova_vaga"):
     titulo_vaga = st. text_input ("titulo")
     empresa_vaga = st. text_input ("empresa")
@@ -35,4 +36,31 @@ with st.form("nova_vaga"):
     nivel_vaga = st. text_input ("nivel")
     nova_vaga = st.form_submit_button("inserir vaga") 
 if nova_vaga:  
-    dados_vaga = {"titulo":titulo_vaga, "empresa":empresa_vaga,"formato":formato_vaga,"link":link_vaga,"nivel":nivel_vaga}
+    dados_vaga = {"titulo":titulo_vaga, "empresa":empresa_vaga,"formato":formato_vaga,"link":link_vaga,"nivel":nivel_vaga} #Analisa se o valor adicionado e igual ao do schemas.py 
+    try:   
+        resposta_post = requests.post(API_URL,json=dados_vaga)
+        if resposta_post.status_code == 201:
+            st.success(f"Criado com Sucesso")
+        else:
+             st.error(f"Erro: Status {resposta_post.status_code}")
+    except requests.exceptions.RequestException as error:
+     st.error(f"Erro: Status {error}")
+
+# Opção para deletar             
+id_vaga = st.number_input('ID da vaga')          
+with st.form("editar_vaga"):
+        titulo_edicao = st. text_input ("titulo")
+        empresa_edicao = st. text_input ("empresa")
+        formato_edicao = st. text_input ("formato")
+        link_edicao = st. text_input ("link")
+        nivel_edicao = st. text_input ("nivel")
+        nova_edicao = st.form_submit_button("inserir vaga") 
+if nova_edicao:   
+    dados_edicao = {"titulo":titulo_edicao, "empresa":empresa_edicao,"formato":formato_edicao,"link":link_edicao,"nivel":nivel_edicao} #Analisa se o valor adicionado e igual ao do schemas.py 
+    try:
+        resposta_edit = requests.put(f"{API_URL}/{id_vaga}")
+        if resposta_edit.status_code == 200
+            st.success(f"Alterado com sucesso")
+        else:
+            st.erro(f"Erro: Status {}")
+            

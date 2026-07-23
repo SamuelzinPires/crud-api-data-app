@@ -18,7 +18,7 @@ with open ("data/vagas_limpas.csv",  mode='r', encoding= 'utf-8') as db_vagas: #
         }
         try: # Envia os dados para a API externa via requisição POST
             resposta = requests.post(API_URL, json=dados_vaga) 
-            if resposta.status_code == 201:    #Verifica se o envio deu certo (Status 201 significa Criado 
+            if resposta.status_code == 201:    #Verifica se o envio deu certo (Status 201 significa Criado)
                 print(f"Sucesso: Vaga '{dados_vaga['titulo']}' importada.")
             else:
                 print(f"Erro ao importar '{dados_vaga['titulo']}': Status {resposta.status_code}")
