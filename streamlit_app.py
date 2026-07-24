@@ -46,7 +46,7 @@ if nova_vaga:
     except requests.exceptions.RequestException as error:
      st.error(f"Erro: Status {error}")
 
-# Opção para deletar             
+ # Opção para editar a vaga            
 id_vaga = st.number_input('ID da vaga')          
 with st.form("editar_vaga"):
         titulo_edicao = st. text_input ("titulo")
@@ -58,9 +58,24 @@ with st.form("editar_vaga"):
 if nova_edicao:   
     dados_edicao = {"titulo":titulo_edicao, "empresa":empresa_edicao,"formato":formato_edicao,"link":link_edicao,"nivel":nivel_edicao} #Analisa se o valor adicionado e igual ao do schemas.py 
     try:
-        resposta_edit = requests.put(f"{API_URL}/{id_vaga}")
-        if resposta_edit.status_code == 200
+        resposta_edit = requests.put(f"{API_URL}/{id_vaga}",json=dados_edicao)
+        if resposta_edit.status_code == 200:
             st.success(f"Alterado com sucesso")
         else:
-            st.erro(f"Erro: Status {}")
-            
+             st.error(f"Erro: Status {resposta_edit.status_code}")
+    except requests.exceptions.RequestException as erro:
+     st.error(f"Erro: Status {erro}")
+
+# Opção para deletar
+clik_excluir = st.button("Excluir vaga")
+if clik_excluir:
+    try:
+        resposta_delete = requests.delete(f"{API_URL}/{id_vaga}")
+        if resposta_delete.status_code == 200:
+            st.success(f"Apagado com sucesso")
+        else:
+            st.error(f"Erro: Status {resposta_delete.status_code}")
+    except requests.exceptions.RequestException as erro:
+     st.error(f"Erro: Status {erro}")
+
+
