@@ -3,19 +3,41 @@ import requests  # lib de chamadas HTTP, usada pra falar com a API
 
 API_URL = "http://127.0.0.1:8000/vagas"  # endereço fixo do endpoint GET /vagas
 
-st.title("Vagas")  # título exibido no topo da página
+st.title("Vagas dentro da Aplicação")  # título exibido no topo da página
+st.caption("visualização de vagas extraídas") # Sub Título 
 
-nivel_selecionado = st.selectbox("Selecione um nível", ["Todos", "Júnior", "Pleno", "Sênior"])  # dropdown; o valor escolhido fica guardado aqui
+st.sidebar.subheader("Filtrar")
+nivel_selecionado = st.sidebar.selectbox("Selecione um nível", ["Todos", "Júnior", "Pleno", "Sênior"])  # dropdown; o valor escolhido fica guardado aqui
 
-resposta = requests.get(API_URL)  # chamada HTTP GET pra API - guarda a resposta inteira (status code + corpo)
-vagas = resposta.json()  # pega o corpo (texto JSON) e desserializa pra lista de dicionários Python - a conversão SQL->JSON já aconteceu do lado da API; aqui é o caminho inverso (JSON->Python)
+if "pagina" not in st.session_state:  # só roda na 1ª carga; reruns seguintes já acham a chave e pulam essa linha
+    st.session_state.pagina = 0
+itens_por_pagina = 10  # o "tamanho" de cada página
+coluna_anterior, coluna_proxima = st.columns(2)  # 2 colunas lado a lado
 
-if nivel_selecionado == "Todos":  # decide qual lista vai ser usada depois
-    st.write(vagas)
-    vagas_filtradas = vagas  # "Todos" -> usa a lista completa, sem filtrar
+with coluna_anterior:
+    if st.button("Página anterior"):
+        if st.session_state.pagina > 0:   # trava pra não deixar página negativa
+            st.session_state.pagina -= 1
+
+with coluna_proxima:
+    if st.button("Próxima página"):
+        st.session_state.pagina += 1
+
+st.write(f"Página atual: {st.session_state.pagina + 1}")  # +1 só pra exibir "Página 1" em vez de "Página 0"
+skip = st.session_state.pagina * itens_por_pagina  # página 0 pula 0, página 1 pula 10, página 2 pula 20...
+try:
+    resposta = requests.get(API_URL, params={"skip": skip, "limit": itens_por_pagina}) # busca só a página atual
+    vagas = resposta.json() # pega o corpo (texto JSON) e desserializa pra lista de dicionários Python - a conversão SQL->JSON já aconteceu do lado da API; aqui é o caminho inverso (JSON->Python)
+except requests.exceptions.RequestException as erro:
+    st.error(f"Erro: {erro}")
+    vagas = []
+
+if nivel_selecionado == "Todos":  # "Todos" não é um nível real do banco, é só a opção padrão do dropdown
+    vagas_filtradas = vagas  # sem filtro: usa a página inteira que já veio da API 
 else:
-    vagas_filtradas = [vaga for vaga in vagas if vaga["nivel"] == nivel_selecionado]  # nível específico -> mantém só as vagas cujo campo "nivel" bate com a escolha
+    vagas_filtradas = [vaga for vaga in vagas if vaga["nivel"] == nivel_selecionado]  # nível específico -> mantém só as vagas, dentro da página atual, cujo campo "nivel" bate com a escolha
 
+ #exibição das vagas
 if vagas_filtradas:  # lista vazia é "falsa" em Python - checa se sobrou algo pra mostrar
     for vaga in vagas_filtradas:                  
         st.write(f"**Título:** {vaga['titulo']}")
@@ -24,11 +46,10 @@ if vagas_filtradas:  # lista vazia é "falsa" em Python - checa se sobrou algo p
         st.write(f"**Nível:** {vaga['nivel']}")
         st.write(f"**Link:** {vaga['link']}")
         st.write("---")
-else:
-    st.write("Nenhuma vaga encontrada para o nível selecionado.")
 
 #Adicionar vagas Manualmente
-with st.form("nova_vaga"):
+st.sidebar.subheader("Cadastrar nova vaga")
+with st.sidebar.form("nova_vaga"):
     titulo_vaga = st. text_input ("titulo")
     empresa_vaga = st. text_input ("empresa")
     formato_vaga = st. text_input ("formato")
@@ -46,15 +67,16 @@ if nova_vaga:
     except requests.exceptions.RequestException as error:
      st.error(f"Erro: Status {error}")
 
- # Opção para editar a vaga            
-id_vaga = st.number_input('ID da vaga')          
-with st.form("editar_vaga"):
+ # Opção para editar a vaga - também no sidebar agora
+st.sidebar.subheader("Editar / Excluir vaga")
+id_vaga = st.sidebar.number_input('ID da vaga', min_value=0, step=1)   # campo compartilhado: usado tanto pelo formulário de edição (PUT) quanto pelo botão de excluir (DELETE) logo abaixo
+with st.sidebar.form("editar_vaga"):
         titulo_edicao = st. text_input ("titulo")
         empresa_edicao = st. text_input ("empresa")
         formato_edicao = st. text_input ("formato")
         link_edicao = st. text_input ("link")
         nivel_edicao = st. text_input ("nivel")
-        nova_edicao = st.form_submit_button("inserir vaga") 
+        nova_edicao = st.form_submit_button("atualizar vaga") 
 if nova_edicao:   
     dados_edicao = {"titulo":titulo_edicao, "empresa":empresa_edicao,"formato":formato_edicao,"link":link_edicao,"nivel":nivel_edicao} #Analisa se o valor adicionado e igual ao do schemas.py 
     try:
@@ -66,8 +88,8 @@ if nova_edicao:
     except requests.exceptions.RequestException as erro:
      st.error(f"Erro: Status {erro}")
 
-# Opção para deletar
-clik_excluir = st.button("Excluir vaga")
+# Opção para deletar 
+clik_excluir = st.sidebar.button("Excluir vaga")
 if clik_excluir:
     try:
         resposta_delete = requests.delete(f"{API_URL}/{id_vaga}")
@@ -77,5 +99,3 @@ if clik_excluir:
             st.error(f"Erro: Status {resposta_delete.status_code}")
     except requests.exceptions.RequestException as erro:
      st.error(f"Erro: Status {erro}")
-
-
