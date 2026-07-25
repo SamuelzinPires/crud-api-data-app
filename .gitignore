@@ -19,4 +19,3 @@ __pycache__/
 # Banco de dados local (se usar SQLite futuramente)
 *.sqlite3
 *CRUD-API-Data-Application.md
-*data/

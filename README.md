@@ -39,7 +39,7 @@ crud-api-fastapi/
 │   └── routers/
 │       └── vagas.py         # rotas de /vagas (GET, POST, PUT, DELETE)
 ├── data/
-│   └── vagas_limpas.csv     # dado real, gerado pelo scraper ETL Vagas Tech (não versionado)
+│   └── vagas_limpas.csv     # dado real, gerado pelo scraper ETL Vagas Tech (versionado - já vem pronto pra importar)
 ├── streamlit_app.py         # interface web
 ├── seed_data.py             # importa o CSV pra API (POST linha a linha)
 ├── docker-compose.yml       # container do Postgres
@@ -83,12 +83,12 @@ fastapi dev app/main.py
 ```
 A tabela `vagas` é criada automaticamente na primeira subida. A API fica em `http://127.0.0.1:8000`, com documentação interativa em `http://127.0.0.1:8000/docs`.
 
-### 5. (Opcional) Importar dados reais do scraper
-Com a API rodando, num terminal separado:
+### 5. (Opcional) Importar dados reais
+O repositório já vem com `data/vagas_limpas.csv` (dado real do scraper ETL Vagas Tech). Com a API rodando, num terminal separado:
 ```bash
 python seed_data.py
 ```
-Lê `data/vagas_limpas.csv` e cadastra cada vaga via `POST /vagas`.
+Lê o CSV e cadastra cada vaga via `POST /vagas` — sem precisar de nenhum arquivo externo, funciona direto após o clone.
 
 ### 6. Rodar a interface
 Em outro terminal (API e Docker já ativos):
