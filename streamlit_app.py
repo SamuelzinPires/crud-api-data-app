@@ -25,18 +25,18 @@ with coluna_proxima:
 
 st.write(f"Página atual: {st.session_state.pagina + 1}")  # +1 só pra exibir "Página 1" em vez de "Página 0"
 skip = st.session_state.pagina * itens_por_pagina  # página 0 pula 0, página 1 pula 10, página 2 pula 20...
+if nivel_selecionado == "Todos": 
+    params = {"skip": skip, "limit": itens_por_pagina}
+else: 
+    params = {"skip": skip, "limit": itens_por_pagina, "nivel": nivel_selecionado}
 try:
-    resposta = requests.get(API_URL, params={"skip": skip, "limit": itens_por_pagina}) # busca só a página atual
+    resposta = requests.get(API_URL, params=params) # busca só a página atual
     vagas = resposta.json() # pega o corpo (texto JSON) e desserializa pra lista de dicionários Python - a conversão SQL->JSON já aconteceu do lado da API; aqui é o caminho inverso (JSON->Python)
 except requests.exceptions.RequestException as erro:
     st.error(f"Erro: {erro}")
     vagas = []
 
-if nivel_selecionado == "Todos":  # "Todos" não é um nível real do banco, é só a opção padrão do dropdown
-    vagas_filtradas = vagas  # sem filtro: usa a página inteira que já veio da API 
-else:
-    vagas_filtradas = [vaga for vaga in vagas if vaga["nivel"] == nivel_selecionado]  # nível específico -> mantém só as vagas, dentro da página atual, cujo campo "nivel" bate com a escolha
-
+vagas_filtradas = vagas
  #exibição das vagas
 if vagas_filtradas:  # lista vazia é "falsa" em Python - checa se sobrou algo pra mostrar
     for vaga in vagas_filtradas:                  

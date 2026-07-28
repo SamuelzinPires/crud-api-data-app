@@ -7,10 +7,12 @@ router = APIRouter(prefix="/vagas", tags=["vagas"])  # prefix soma "/vagas" na f
 
 
 @router.get("", response_model=list[schemas.Vaga])  # "" aqui vira "/vagas" por causa do prefix
-def read_vagas(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):  # skip/limit vêm da query string (?skip=...&limit=...), com padrão pra quando ninguém manda nada
-    vagas = db.query(models.Vaga).offset(skip).limit(limit).all()  # pula "skip" registros, pega até "limit" - é a paginação
-    return vagas  # lista vazia é resposta válida (200), não é erro
-
+def read_vagas(skip: int = 0, limit: int = 10, nivel: str | None = None, db: Session = Depends(get_db)):  # skip/limit vêm da query string (?skip=...&limit=...), com padrão pra quando ninguém manda nada
+    query = db.query(models.Vaga)  
+    if nivel: 
+        query = query.filter(models.Vaga.nivel == nivel)
+    vagas = query.offset(skip).limit(limit).all()  # pula "skip" registros, pega até "limit" - é a paginação
+    return vagas
 
 @router.get("/{vaga_id}", response_model=schemas.Vaga)  # "/{vaga_id}" vira "/vagas/{vaga_id}"; {vaga_id} é parte da URL, não query string
 def read_vaga(vaga_id: int, db: Session = Depends(get_db)):
