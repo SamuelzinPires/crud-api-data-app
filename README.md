@@ -100,7 +100,7 @@ streamlit run streamlit_app.py
 
 | Método | Rota | Descrição | Sucesso |
 |---|---|---|---|
-| GET | `/vagas?skip=0&limit=10` | Lista vagas (paginado) | `200` |
+| GET | `/vagas?skip=0&limit=10&nivel=Sênior` | Lista vagas (paginado, filtro por nível opcional) | `200` |
 | GET | `/vagas/{id}` | Busca uma vaga pelo id | `200` / `404` |
 | POST | `/vagas` | Cria uma vaga | `201` |
 | PUT | `/vagas/{id}` | Atualiza uma vaga | `200` / `404` |
@@ -113,7 +113,8 @@ streamlit run streamlit_app.py
 Fora do escopo desta primeira versão, documentado aqui como próximos passos:
 - Campo `status` de candidatura (acompanhamento pessoal: "quero aplicar", "aplicado", "entrevista"...)
 - Streamlit em 2 abas: vagas disponíveis → selecionar → vira candidatura acompanhada
-- Paginação/filtro por nível resolvidos no backend (hoje o filtro por nível é aplicado no lado do Streamlit, só sobre a página já carregada)
+- Formulário de edição pré-carregar os dados atuais da vaga (hoje é preciso redigitar todos os campos pra editar um só)
+- Testes automatizados (`pytest` + `TestClient`)
 
 ## Autor
 

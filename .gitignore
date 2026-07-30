@@ -19,3 +19,6 @@ __pycache__/
 # Banco de dados local (se usar SQLite futuramente)
 *.sqlite3
 *CRUD-API-Data-Application.md
+
+# Banco SQLite gerado pelos testes (pytest) - recriado a cada execução, não é código
+test.db
