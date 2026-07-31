@@ -21,3 +21,4 @@ def client():
     Base.metadata.create_all(bind=engine) # Cria um banco para o teste
     yield TestClient(app)
     Base.metadata.drop_all(bind=engine)  # Drop do banco de testes 
+
