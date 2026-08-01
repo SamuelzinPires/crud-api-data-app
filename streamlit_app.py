@@ -70,12 +70,22 @@ if nova_vaga:
  # Opção para editar a vaga - também no sidebar agora
 st.sidebar.subheader("Editar / Excluir vaga")
 id_vaga = st.sidebar.number_input('ID da vaga', min_value=0, step=1)   # campo compartilhado: usado tanto pelo formulário de edição (PUT) quanto pelo botão de excluir (DELETE) logo abaixo
+vaga_existente = {}
+try:
+    resposta_get = requests.get(f"{API_URL}/{id_vaga}")
+    if resposta_get.status_code == 200:
+        vaga_existente = resposta_get.json()
+        st.sidebar.write(f"Vaga selecionada: {vaga_existente['titulo']} - {vaga_existente['empresa']}") #oque isso aqui faz?
+    else:
+        st.sidebar.warning(f"Vaga com ID {id_vaga} não encontrada.")
+except requests.exceptions.RequestException as erro:
+    st.sidebar.error(f"Erro: {erro}")
 with st.sidebar.form("editar_vaga"):
-        titulo_edicao = st. text_input ("titulo")
-        empresa_edicao = st. text_input ("empresa")
-        formato_edicao = st. text_input ("formato")
-        link_edicao = st. text_input ("link")
-        nivel_edicao = st. text_input ("nivel")
+        titulo_edicao = st.text_input("titulo", value=vaga_existente.get("titulo", ""))
+        empresa_edicao = st. text_input ("empresa", value=vaga_existente.get("empresa", ""))
+        formato_edicao = st. text_input ("formato", value=vaga_existente.get("formato", ""))
+        link_edicao = st. text_input ("link", value=vaga_existente.get("link", ""))
+        nivel_edicao = st. text_input ("nivel", value=vaga_existente.get("nivel", ""))
         nova_edicao = st.form_submit_button("atualizar vaga") 
 if nova_edicao:   
     dados_edicao = {"titulo":titulo_edicao, "empresa":empresa_edicao,"formato":formato_edicao,"link":link_edicao,"nivel":nivel_edicao} #Analisa se o valor adicionado e igual ao do schemas.py 
